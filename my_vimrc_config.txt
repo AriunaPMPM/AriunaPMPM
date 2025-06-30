@@ -1,0 +1,74 @@
+" --- General Settings ---
+set nocompatible            " Disable old-school vi compatibility
+set encoding=utf-8
+set fileencoding=utf-8
+set hidden                  " Allow switching buffers without saving
+set mouse=a                 " Enable mouse support
+set clipboard=unnamedplus  " Use system clipboard
+
+" --- User Interface ---
+set number                  " Show line numbers
+set relativenumber          " Relative line numbers for easier navigation
+set ruler                   " Show cursor position
+set showcmd                 " Show command in bottom bar
+set wildmenu                " Command-line completion enhancement
+set lazyredraw              " Faster scrolling
+set showmatch               " Highlight matching bracket
+set visualbell              " No beep on errors
+
+" --- Indentation & Tabs ---
+set tabstop=4               " Number of spaces per tab
+set shiftwidth=4            " Indent amount for auto-indent
+set expandtab               " Convert tabs to spaces
+set smartindent             " Smart auto-indent
+set autoindent              " Auto-indent new lines
+
+" --- Searching ---
+set ignorecase              " Case-insensitive search...
+set smartcase               " ...unless capital letters are used
+set incsearch               " Show match while typing
+set hlsearch                " Highlight all matches
+nnoremap <leader><space> :nohlsearch<CR>  " Toggle search highlight
+
+" --- File Management ---
+set backup                  " Enable backups
+set backupdir=~/.vim/backup//
+set undofile                " Persistent undo
+set undodir=~/.vim/undo//
+set noswapfile              " Disable swap files
+
+" Create directories if they don't exist
+if !isdirectory(expand(&backupdir))
+    call mkdir(expand(&backupdir), "p")
+endif
+if !isdirectory(expand(&undodir))
+    call mkdir(expand(&undodir), "p")
+endif
+
+" --- Key Mappings ---
+let mapleader = " "         " Set <Leader> to space
+
+" Fast saving
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>x :x<CR>
+
+" Easy window movement
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" --- Colors and UI ---
+syntax on                   " Enable syntax highlighting
+set background=dark         " Or 'light'
+colorscheme default         " Keep it builtin
+set termguicolors           " Enable 24-bit color (in modern terminals)
+
+" --- Status Line ---
+set laststatus=2            " Always show status line
+set statusline=%f\ %y\ %m%r%h%w\ [%{&ff}:%{&fileencoding}]\ [LINE:%l/%L]\ [COL:%c]
+
+" --- Misc ---
+filetype plugin indent on   " Enable filetype detection
+set timeoutlen=500          " Faster leader key response
