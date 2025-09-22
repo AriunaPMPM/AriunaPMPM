@@ -1,0 +1,30 @@
+/**
+ * @brief [Short one-line summary of what the function does]
+ *
+ * [Optional: Longer description of the function. Explain what it
+ *  calculates, algorithms used, assumptions, etc.]
+ *
+ * @param[in]  param1  [Description of first parameter (input)]
+ * @param[out] param2  [Description of second parameter (output)]
+ * @param[in,out] param3 [Description if parameter is modified inside function]
+ *
+ * @return [Description of the return value]
+ *
+ * @retval 0   [Meaning of return code 0]
+ * @retval -1  [Meaning of return code -1, if applicable]
+ *
+ * @exception std::runtime_error [Thrown when X condition occurs]
+ * @exception std::invalid_argument [Thrown when invalid input is given]
+ *
+ * @pre   [Conditions that must be true before calling the function]
+ * @post  [State guaranteed after the function finishes]
+ *
+ * @note  [Any extra notes, warnings, or implementation details]
+ * @warning [Important caveats or unsafe situations]
+ * @see   OtherFunction(), RelatedClass
+ * @bug   [Known issues if any]
+ * @todo  [Future improvements or tasks]
+ * @since [Version since the function exists]
+ * @deprecated [Use OtherFunction() instead]
+ * @test  [Unit test references or scenarios]
+ */
