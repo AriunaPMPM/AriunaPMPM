@@ -1,0 +1,18 @@
+# python3 venv
+    ## install
+    sudo apt install python3-venv
+
+    ## setup
+    source venv/bin/activate
+    deactivate
+
+# Ros2 workspace setup, insert into .bashrc
+    source /opt/ros/jazzy/setup.bash
+    source /ros2_ws/install/setup.bash
+
+# colcon_cd autocomplete, insert into .bashrc
+    source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+    source /usr/share/colcon_cd/function/colcon_cd.sh
+    source /usr/share/colcon_cd/function/colcon_cd-argcomplete.sh
+
+#
