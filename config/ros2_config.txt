@@ -8,11 +8,11 @@
 
 # Ros2 workspace setup, insert into .bashrc
     source /opt/ros/jazzy/setup.bash
-    source /ros2_ws/install/setup.bash
+    source ~/ros2_ws/install/setup.bash
 
 # colcon_cd autocomplete, insert into .bashrc
     source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
     source /usr/share/colcon_cd/function/colcon_cd.sh
-    source /usr/share/colcon_cd/function/colcon_cd-argcomplete.sh
+    source /usr/share/colcon_cd/function/colcon_cd-argcomplete.bash
 
 #
