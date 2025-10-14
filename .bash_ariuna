@@ -1,0 +1,22 @@
+# function
+ccd() {
+    colcon_cd "$@"
+}
+if type _python_argcomplete &>/dev/null; then
+    eval "$(register-python-argcomplete ccd=colcon_cd)"
+fi
+
+# alias
+alias cb="colcon build"
+echo -e "custom alias for Ariuna was loaded.\n"
+
+# ros2 setup
+source /opt/ros/jazzy/setup.bash
+source ~/ros2_ws/install/setup.bash
+source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+source /usr/share/colcon_cd/function/colcon_cd.sh
+source /usr/share/colcon_cd/function/colcon_cd-argcomplete.bash
+
+echo -e "custom bash setup for Ariuna was loaded.\n"
+sleep 0.3
+clear

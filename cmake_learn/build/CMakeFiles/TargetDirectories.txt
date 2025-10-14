@@ -1,0 +1,4 @@
+/home/pmpm-deb/AriunaPMPM/cmake_learn/build/CMakeFiles/hello_cmake.dir
+/home/pmpm-deb/AriunaPMPM/cmake_learn/build/CMakeFiles/test.dir
+/home/pmpm-deb/AriunaPMPM/cmake_learn/build/CMakeFiles/edit_cache.dir
+/home/pmpm-deb/AriunaPMPM/cmake_learn/build/CMakeFiles/rebuild_cache.dir
