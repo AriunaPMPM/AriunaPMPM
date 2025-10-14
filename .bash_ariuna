@@ -1,3 +1,4 @@
+### Source this file to use as customization for bash
 # function
 ccd() {
     colcon_cd "$@"
