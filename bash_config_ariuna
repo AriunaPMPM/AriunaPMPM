@@ -1,5 +1,15 @@
 ### Source this file inside bashrc to use as customization for bash
-# functions
+
+### Environment detection
+# WSL detection
+if grep -qi microsoft /proc/version; then
+    IS_WSL=true
+else
+    IS_WSL=false
+fi
+
+### functions
+#CLIP function that copies content of file to clipboard
 clip() {
   if [ -f "$1" ]; then
     cat "$1" | xclip -selection clipboard
@@ -9,20 +19,129 @@ clip() {
   fi
 }
 
-# alia
-alias show="nautilus" ### windows: explorer.exe
-alias ccd="colcon_cd"
+#ros sourcer, typically used after build.
+# Source ros workspace
+./source() {
+  local setup_file="./install/setup.bash"
+  if [ "$1" = "-ws" ]; then
+    setup_file="${ROS_WS}/install/setup.bash"
+  else
+    setup_file="./install/setup.bash"
+  fi  
+
+  if [ -f "$setup_file" ]; then
+    echo "Sourcing $setup_file ..."
+    source "$setup_file"
+    echo "Sourced workspace: $ROS_WS"
+  else
+    echo "No install/setup.bash found in: $(pwd)"
+  fi
+}
+
+# Source venv for ros
+./rosenv() {
+    local venv_file="$HOME/rosenv/bin/activate"
+    if [[ "$1" == "-d" && -n "$VIRTUAL_ENV" ]]; then
+      deactivate
+      return
+    fi
+
+    if [[ -f "$venv_file" && -z "$VIRTUAL_ENV" ]]; then
+      source "$venv_file"
+    elif [[ ! -f "$venv_file" ]]; then
+      echo "No virtual environment found at $venv_file"
+    fi
+}
+# Shortcut function for colcon packages with subdirectory support
+# Shortcut function for colcon packages with subdirectory support
+./cd() {
+    if [ $# -eq 0 ]; then
+        echo "Usage: ./cd <package_path>"
+        return 1
+    fi
+
+    local package="${1%%/*}"      # first component
+    local remainder="${1#*/}"     # rest after first /
+
+    # Go to package root
+    local package_dir="${ROS_WS}/src/$package"
+    if [ ! -d "$package_dir" ]; then
+        echo "Package not found: $package"
+        return 1
+    fi
+    cd "$package_dir" || return 1
+
+    # Go to subdirectory if specified
+    if [ "$remainder" != "$package" ]; then
+        cd "$remainder" || return 1
+    fi
+}
+
+_ccd_completion() {
+    local curr_word="${COMP_WORDS[COMP_CWORD]}"
+    local package="${curr_word%%/*}"
+    local remainder="${curr_word#*/}"
+    local package_dir="${ROS_WS}/src/$package"
+
+    if [ -d "$package_dir" ]; then
+        local dirs=( $(find "$package_dir" -maxdepth 1 -type d -printf "%f\n") )
+
+        if [ "$remainder" != "$curr_word" ]; then
+            # Completing inside a package
+            COMPREPLY=( $(compgen -W "${dirs[*]}" -- "$remainder") )
+            COMPREPLY=( "${COMPREPLY[@]/#/$package/}" )
+
+            # If only 1 match, append slash automatically
+            if [ ${#COMPREPLY[@]} -eq 1 ] && [ -d "${package_dir}/${COMPREPLY[0]#*/}" ]; then
+                COMPREPLY[0]="${COMPREPLY[0]}/"
+            fi
+        else
+            # Completing the package itself
+            COMPREPLY=( $(compgen -W "${dirs[*]}" -- "$curr_word") )
+            if [ ${#COMPREPLY[@]} -eq 1 ] && [ -d "${package_dir}/${COMPREPLY[0]}" ]; then
+                COMPREPLY[0]="${COMPREPLY[0]}/"
+            fi
+        fi
+    else
+        # Top-level package completion
+        local packages=( $(ls -d "${ROS_WS}/src"/*/ 2>/dev/null | xargs -n1 basename) )
+        COMPREPLY=( $(compgen -W "${packages[*]}" -- "$curr_word") )
+        if [ ${#COMPREPLY[@]} -eq 1 ] && [ -d "${ROS_WS}/src/${COMPREPLY[0]}" ]; then
+            COMPREPLY[0]="${COMPREPLY[0]}/"
+        fi
+    fi
+
+    # Tell Bash not to append space automatically
+    compopt -o nospace
+}
+
+# Attach completion with -o nospace to avoid auto space
+complete -o nospace -F _ccd_completion ./cd
+
+
+
+### aliases
+if [ "$IS_WSL" = true ]; then
+    alias show="explorer.exe"
+else
+    alias show="nautilus"
+fi
+
 alias cb="colcon build --symlink-install"
-alias cbd="colcon build --symlink-install --packages-select"
+alias cbp="colcon build --symlink-install --packages-select"
 echo -e "custom alias for Ariuna was loaded.\n"
 
-# ros2 setup
+### ros2 setup
 #ROS_DISTRO="foxy" # jazzy, noetic
 if [ -z "${ROS_DISTRO}" ]; then
-  export ROS_DISTRO="foxy" # jazzy, noetic
+  export ROS_DISTRO="jazzy" # jazzy, noetic
   echo "ROS_DISTRO set to '${ROS_DISTRO}'"
 fi
-ROS_WS="$HOME/ros2_foxy_ws" # ros2_ws
+if [ -z "${ROS_WS}" ]; then
+  export ROS_WS="$HOME/ros2_ws" # jazzy, noetic
+  echo "ROS_WS set to '${ROS_WS}'"
+fi
+
 source /opt/ros/${ROS_DISTRO}/setup.bash
 source ${ROS_WS}/install/setup.bash
 source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
