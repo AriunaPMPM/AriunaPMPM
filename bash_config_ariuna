@@ -1,5 +1,30 @@
 ### Source this file inside bashrc to use as customization for bash
 
+# Determine ROS1 or ROS2 based on distro
+export IS_ROS1=false
+export IS_ROS2=true
+ros1_distros=(
+  noetic
+  melodic
+)
+ros2_distros=(
+  jazzy
+  iron
+  humble
+  galactic
+  foxy
+)
+for distro in /opt/ros/*; do
+  distro=$(basename "$dir")
+  for d in "${ros1_distros[@]}"; do
+    if [[ "$distro" == "$d" ]]; then
+      IS_ROS1=true
+      IS_ROS1=false
+    fi
+  done
+  
+done
+
 ### Environment detection
 # WSL detection
 if grep -qi microsoft /proc/version; then
@@ -22,11 +47,19 @@ clip() {
 #ros sourcer, typically used after build.
 # Source ros workspace
 ./source() {
-  local setup_file="./install/setup.bash"
-  if [ "$1" = "-ws" ]; then
-    setup_file="${ROS_WS}/install/setup.bash"
+  # setup source directories based on ROS1, ROS2
+  if [[ "$IS_ROS1" == false ]]; then
+    setup_dir="install"
   else
-    setup_file="./install/setup.bash"
+    setup_dir="devel"
+  fi
+
+  local setup_file="./$setup_dir/setup.bash"
+
+  if [ "$1" = "-ws" ]; then
+    setup_file="${ROS_WS}/$setup_dir/setup.bash"
+  else
+    setup_file="./$setup_dir/setup.bash"
   fi  
 
   if [ -f "$setup_file" ]; then
@@ -34,7 +67,7 @@ clip() {
     source "$setup_file"
     echo "Sourced workspace: $ROS_WS"
   else
-    echo "No install/setup.bash found in: $(pwd)"
+    echo "No $setup_dir/setup.bash found in: $(pwd)"
   fi
 }
 
@@ -52,7 +85,7 @@ clip() {
       echo "No virtual environment found at $venv_file"
     fi
 }
-# Shortcut function for colcon packages with subdirectory support
+
 # Shortcut function for colcon packages with subdirectory support
 ./cd() {
     if [ $# -eq 0 ]; then
@@ -83,9 +116,8 @@ _ccd_completion() {
     local remainder="${curr_word#*/}"
     local package_dir="${ROS_WS}/src/$package"
 
-    if [ -d "$package_dir" ]; then
-        local dirs=( $(find "$package_dir" -maxdepth 1 -type d -printf "%f\n") )
-
+    if [ -d "$package_dir" ]; then 
+        local dirs=( $(find "$package_dir" -maxdepth 1 -type d -printf "%f\n") ) 
         if [ "$remainder" != "$curr_word" ]; then
             # Completing inside a package
             COMPREPLY=( $(compgen -W "${dirs[*]}" -- "$remainder") )
@@ -121,14 +153,22 @@ complete -o nospace -F _ccd_completion ./cd
 
 
 ### aliases
+
+# show alias for explorer popup
 if [ "$IS_WSL" = true ]; then
     alias show="explorer.exe"
 else
     alias show="nautilus"
 fi
 
-alias cb="colcon build --symlink-install"
-alias cbp="colcon build --symlink-install --packages-select"
+if [[ "$IS_ROS1" == false ]]; then
+  alias cb="colcon build --symlink-install"
+  alias cbp="colcon build --symlink-install --packages-select"
+else
+  alias cb="catkin_make"
+  alias cbp="catkin_make --pkg"
+fi
+
 echo -e "custom alias for Ariuna was loaded.\n"
 
 ### ros2 setup
@@ -143,10 +183,13 @@ if [ -z "${ROS_WS}" ]; then
 fi
 
 source /opt/ros/${ROS_DISTRO}/setup.bash
-source ${ROS_WS}/install/setup.bash
-source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
-source /usr/share/colcon_cd/function/colcon_cd.sh
-source /usr/share/colcon_cd/function/colcon_cd-argcomplete.bash
+source ${ROS_WS}/$setup_dir/setup.bash
+
+if [[ "$IS_ROS1" == false ]]; then
+  source /usr/share/colcon_argcomplete/hook/colcon-argcomplete.bash
+  source /usr/share/colcon_cd/function/colcon_cd.sh
+  source /usr/share/colcon_cd/function/colcon_cd-argcomplete.bash
+fi
 
 echo -e "custom bash setup for Ariuna was loaded.\n"
 sleep 0.3
