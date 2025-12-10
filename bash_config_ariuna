@@ -34,6 +34,7 @@ else
 fi
 
 ### functions
+    # Sleep and clear
 ./ls() {
     local sleep_rate=0.1
 
@@ -43,22 +44,23 @@ fi
         shift 2
     fi
 
-    # No argument → default ls
+    # Determine command to run
+    local cmd
     if [ $# -eq 0 ]; then
-        ls
+        cmd=(ls)
+    elif [ -d "$1" ]; then
+        cmd=(ls "$1")
     else
-        # Check if first argument is a directory
-        if [ -d "$1" ]; then
-            ls "$1"
-        else
-            # Treat as a command with arguments
-            "$@"
-        fi
+        cmd=("$@")
     fi
 
-    # Sleep and clear
-    sleep "$sleep_rate"
-    clear
+    # Loop forever
+    while true; do
+        "${cmd[@]}"
+        sleep "$sleep_rate"
+        clear
+        sleep "$sleep_rate"
+    done
 }
 
 
