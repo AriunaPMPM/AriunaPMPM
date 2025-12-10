@@ -34,6 +34,34 @@ else
 fi
 
 ### functions
+./ls() {
+    local sleep_rate=0.1
+
+    # Handle optional -r <rate>
+    if [ "$1" = "-r" ]; then
+        sleep_rate="$2"
+        shift 2
+    fi
+
+    # No argument → default ls
+    if [ $# -eq 0 ]; then
+        ls
+    else
+        # Check if first argument is a directory
+        if [ -d "$1" ]; then
+            ls "$1"
+        else
+            # Treat as a command with arguments
+            "$@"
+        fi
+    fi
+
+    # Sleep and clear
+    sleep "$sleep_rate"
+    clear
+}
+
+
 #CLIP function that copies content of file to clipboard
 clip() {
   if [ -f "$1" ]; then
