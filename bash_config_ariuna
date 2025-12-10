@@ -59,7 +59,7 @@ fi
         "${cmd[@]}"
         sleep "$sleep_rate"
         clear
-        sleep "$sleep_rate"
+        sleep 0.1 
     done
 }
 
@@ -224,4 +224,4 @@ fi
 echo -e "custom bash setup for Ariuna was loaded.\n"
 sleep 0.3
 clear
-cd ${ROS_WS}
+#cd ${ROS_WS}
